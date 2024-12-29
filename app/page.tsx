@@ -44,7 +44,7 @@ const Schedule = () => {
       name: "DOM",
       subjects: [
         { name: "Spring", type: "spring" },
-        { name: "Revisão", type: "review" },
+        { name: "Review", type: "review" },
         { name: "Outros", type: "outros" },
       ],
     },
