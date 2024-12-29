@@ -104,14 +104,12 @@ const Schedule = () => {
   // Componente para mostrar a legenda dos tipos de matéria
   const Legend = () => (
     <div className="flex flex-wrap justify-center gap-4 p-4 bg-white rounded-lg shadow-sm">
-      {Object.entries(subjectStyles).map(
-        ([type, { background, textColor }]) => (
-          <div key={type} className="flex items-center gap-2">
-            <div className={`w-4 h-4 rounded ${background}`} />
-            <span className="text-sm capitalize">{type}</span>
-          </div>
-        )
-      )}
+      {Object.entries(subjectStyles).map(([type, { background }]) => (
+        <div key={type} className="flex items-center gap-2">
+          <div className={`w-4 h-4 rounded ${background}`} />
+          <span className="text-sm capitalize">{type}</span>
+        </div>
+      ))}
     </div>
   );
 
