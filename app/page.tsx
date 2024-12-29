@@ -1,101 +1,181 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import React, { useState } from "react";
+import { Card } from "@/components/ui/card";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+// Definindo as cores para os tipos de matéria
+const subjectStyles: Record<
+  "devops" | "golang" | "spring" | "fund" | "outros" | "review",
+  { background: string; textColor: string }
+> = {
+  devops: {
+    background: "bg-gradient-to-r from-red-500 to-red-400",
+    textColor: "text-white",
+  },
+  golang: {
+    background: "bg-gradient-to-r from-blue-500 to-blue-400",
+    textColor: "text-white",
+  },
+  spring: {
+    background: "bg-gradient-to-r from-green-600 to-green-500",
+    textColor: "text-white",
+  },
+  fund: {
+    background: "bg-gradient-to-r from-orange-500 to-orange-400",
+    textColor: "text-white",
+  },
+  outros: {
+    background: "bg-gradient-to-r from-purple-600 to-purple-500",
+    textColor: "text-white",
+  },
+  review: {
+    background: "bg-gradient-to-r from-gray-600 to-gray-500",
+    textColor: "text-white",
+  },
+};
+
+const Schedule = () => {
+  // Dados simulados de dias da semana e matérias
+  const days: {
+    name: string;
+    subjects: { name: string; type: keyof typeof subjectStyles }[];
+  }[] = [
+    {
+      name: "DOM",
+      subjects: [
+        { name: "Spring", type: "spring" },
+        { name: "Revisão", type: "review" },
+        { name: "Outros", type: "outros" },
+      ],
+    },
+    {
+      name: "SEG",
+      subjects: [
+        { name: "DevOps", type: "devops" },
+        { name: "Golang", type: "golang" },
+        { name: "Fund.", type: "fund" },
+      ],
+    },
+    {
+      name: "TER",
+      subjects: [
+        { name: "Golang", type: "golang" },
+        { name: "Spring", type: "spring" },
+        { name: "DevOps", type: "devops" },
+      ],
+    },
+    {
+      name: "QUA",
+      subjects: [
+        { name: "DevOps", type: "devops" },
+        { name: "Golang", type: "golang" },
+        { name: "Outros", type: "outros" },
+      ],
+    },
+    {
+      name: "QUI",
+      subjects: [
+        { name: "Spring", type: "spring" },
+        { name: "DevOps", type: "devops" },
+        { name: "Fund.", type: "fund" },
+      ],
+    },
+    {
+      name: "SEX",
+      subjects: [
+        { name: "Golang", type: "golang" },
+        { name: "DevOps", type: "devops" },
+        { name: "Spring", type: "spring" },
+      ],
+    },
+    {
+      name: "SAB",
+      subjects: [
+        { name: "DevOps", type: "devops" },
+        { name: "Golang", type: "golang" },
+        { name: "Fund.", type: "fund" },
+      ],
+    },
+  ];
+
+  // Estado para controlar o dia ativo
+  const [activeDay, setActiveDay] = useState<number>(new Date().getDay());
+
+  // Componente para mostrar a legenda dos tipos de matéria
+  const Legend = () => (
+    <div className="flex flex-wrap justify-center gap-4 p-4 bg-white rounded-lg shadow-sm">
+      {Object.entries(subjectStyles).map(
+        ([type, { background, textColor }]) => (
+          <div key={type} className="flex items-center gap-2">
+            <div className={`w-4 h-4 rounded ${background}`} />
+            <span className="text-sm capitalize">{type}</span>
+          </div>
+        )
+      )}
     </div>
   );
-}
+
+  // Componente de matéria interativo
+  const Subject = ({
+    name,
+    type,
+    isActive,
+    onClick,
+  }: {
+    name: string;
+    type: keyof typeof subjectStyles;
+    isActive?: boolean;
+    onClick: () => void;
+  }) => (
+    <div
+      onClick={onClick} // Evento de clique
+      className={`${subjectStyles[type].background} p-3 rounded ${
+        subjectStyles[type].textColor
+      } text-center font-medium text-sm transition-all duration-200 ease-in-out hover:bg-opacity-20 hover:scale-[1.05] cursor-pointer ${
+        isActive ? "ring-2 ring-blue-500" : "ring-2 ring-gray-300"
+      }`}
+    >
+      {name}
+    </div>
+  );
+
+  return (
+    <div className="max-w-6xl mx-auto p-4 space-y-6">
+      <h1 className="text-2xl font-bold text-center text-gray-800">
+        Cronograma de Estudos - Juliano Laranjeira
+      </h1>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+        {days.map((day, index) => (
+          <Card
+            key={day.name}
+            className={`overflow-hidden ${
+              index === activeDay
+                ? "ring-4 ring-blue-500 shadow-lg"
+                : "hover:ring-2 hover:ring-blue-300"
+            }`}
+          >
+            <div className="bg-gray-100 p-3 text-center font-bold text-gray-700">
+              {day.name}
+            </div>
+            <div className="p-3 space-y-2">
+              {day.subjects.map((subject, idx) => (
+                <Subject
+                  key={idx}
+                  name={subject.name}
+                  type={subject.type}
+                  isActive={index === activeDay}
+                  onClick={() => setActiveDay(index)} // Alterando o dia ativo
+                />
+              ))}
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Legend />
+    </div>
+  );
+};
+
+export default Schedule;
