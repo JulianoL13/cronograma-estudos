@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 
 // Definindo as cores para os tipos de matéria
@@ -99,7 +99,12 @@ const Schedule = () => {
   ];
 
   // Estado para controlar o dia ativo
-  const [activeDay, setActiveDay] = useState<number>(new Date().getDay());
+  const [activeDay, setActiveDay] = useState<number | null>(null);
+
+  // Atualizar o dia ativo no cliente
+  useEffect(() => {
+    setActiveDay(new Date().getDay());
+  }, []);
 
   // Componente para mostrar a legenda dos tipos de matéria
   const Legend = () => (
