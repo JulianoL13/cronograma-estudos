@@ -3,11 +3,20 @@
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 
-// Definindo as cores para os tipos de matéria
-const subjectStyles: Record<
-  "devops" | "golang" | "spring" | "fund" | "outros" | "review",
-  { background: string; textColor: string }
-> = {
+type SubjectType =
+  | "devops"
+  | "golang"
+  | "spring"
+  | "fund"
+  | "others"
+  | "review";
+
+type SubjectStyle = {
+  background: string;
+  textColor: string;
+};
+
+const subjectStyles: Record<SubjectType, SubjectStyle> = {
   devops: {
     background: "bg-gradient-to-r from-red-500 to-red-400",
     textColor: "text-white",
@@ -24,7 +33,7 @@ const subjectStyles: Record<
     background: "bg-gradient-to-r from-orange-500 to-orange-400",
     textColor: "text-white",
   },
-  outros: {
+  others: {
     background: "bg-gradient-to-r from-purple-600 to-purple-500",
     textColor: "text-white",
   },
@@ -34,22 +43,31 @@ const subjectStyles: Record<
   },
 };
 
+interface Subject {
+  name: string;
+  type: SubjectType;
+}
+
+interface Day {
+  name: string;
+  dayIndex: number;
+  subjects: Subject[];
+}
+
 const Schedule = () => {
-  // Dados simulados de dias da semana e matérias
-  const days: {
-    name: string;
-    subjects: { name: string; type: keyof typeof subjectStyles }[];
-  }[] = [
+  const days: Day[] = [
     {
-      name: "DOM",
+      name: "SUN",
+      dayIndex: 0,
       subjects: [
         { name: "Spring", type: "spring" },
         { name: "Review", type: "review" },
-        { name: "Outros", type: "outros" },
+        { name: "Others", type: "others" },
       ],
     },
     {
-      name: "SEG",
+      name: "MON",
+      dayIndex: 1,
       subjects: [
         { name: "DevOps", type: "devops" },
         { name: "Golang", type: "golang" },
@@ -57,7 +75,8 @@ const Schedule = () => {
       ],
     },
     {
-      name: "TER",
+      name: "TUE",
+      dayIndex: 2,
       subjects: [
         { name: "Golang", type: "golang" },
         { name: "Spring", type: "spring" },
@@ -65,15 +84,17 @@ const Schedule = () => {
       ],
     },
     {
-      name: "QUA",
+      name: "WED",
+      dayIndex: 3,
       subjects: [
         { name: "DevOps", type: "devops" },
         { name: "Golang", type: "golang" },
-        { name: "Outros", type: "outros" },
+        { name: "Others", type: "others" },
       ],
     },
     {
-      name: "QUI",
+      name: "THU",
+      dayIndex: 4,
       subjects: [
         { name: "Spring", type: "spring" },
         { name: "DevOps", type: "devops" },
@@ -81,7 +102,8 @@ const Schedule = () => {
       ],
     },
     {
-      name: "SEX",
+      name: "FRI",
+      dayIndex: 5,
       subjects: [
         { name: "Golang", type: "golang" },
         { name: "DevOps", type: "devops" },
@@ -89,7 +111,8 @@ const Schedule = () => {
       ],
     },
     {
-      name: "SAB",
+      name: "SAT",
+      dayIndex: 6,
       subjects: [
         { name: "DevOps", type: "devops" },
         { name: "Golang", type: "golang" },
@@ -98,40 +121,65 @@ const Schedule = () => {
     },
   ];
 
-  // Estado para controlar o dia ativo
   const [activeDay, setActiveDay] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentTime, setCurrentTime] = useState<string>("");
 
-  // Atualizar o dia ativo no cliente
+  const getCurrentDayAndTime = () => {
+    const now = new Date();
+    const day = now.getDay();
+    const localTime = now.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+    const localDate = now.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    return { day, localTime, localDate };
+  };
+
   useEffect(() => {
-    setActiveDay(new Date().getDay());
+    const updateDateTime = () => {
+      const { day, localTime, localDate } = getCurrentDayAndTime();
+      setActiveDay(day);
+      setCurrentTime(`${localDate} - ${localTime}`);
+      setIsLoading(false);
+    };
+
+    updateDateTime();
+    const interval = setInterval(updateDateTime, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  // Componente para mostrar a legenda dos tipos de matéria
   const Legend = () => (
     <div className="flex flex-wrap justify-center gap-4 p-4 bg-white rounded-lg shadow-sm">
-      {Object.entries(subjectStyles).map(([type, { background }]) => (
-        <div key={type} className="flex items-center gap-2">
-          <div className={`w-4 h-4 rounded ${background}`} />
-          <span className="text-sm capitalize">{type}</span>
-        </div>
-      ))}
+      {(Object.entries(subjectStyles) as [SubjectType, SubjectStyle][]).map(
+        ([type, { background }]) => (
+          <div key={type} className="flex items-center gap-2">
+            <div className={`w-4 h-4 rounded ${background}`} />
+            <span className="text-sm capitalize">{type}</span>
+          </div>
+        )
+      )}
     </div>
   );
 
-  // Componente de matéria interativo
-  const Subject = ({
-    name,
-    type,
-    isActive,
-    onClick,
-  }: {
+  interface SubjectProps {
     name: string;
-    type: keyof typeof subjectStyles;
+    type: SubjectType;
     isActive?: boolean;
     onClick: () => void;
-  }) => (
+  }
+
+  const Subject = ({ name, type, isActive, onClick }: SubjectProps) => (
     <div
-      onClick={onClick} // Evento de clique
+      onClick={onClick}
       className={`${subjectStyles[type].background} p-3 rounded ${
         subjectStyles[type].textColor
       } text-center font-medium text-sm transition-all duration-200 ease-in-out hover:bg-opacity-20 hover:scale-[1.05] cursor-pointer ${
@@ -142,18 +190,34 @@ const Schedule = () => {
     </div>
   );
 
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto p-4 space-y-6 animate-pulse">
+        <div className="h-8 bg-gray-200 rounded w-1/2 mx-auto mb-6"></div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} className="h-48 bg-gray-200 rounded"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
-      <h1 className="text-2xl font-bold text-center text-gray-800">
-        Cronograma de Estudos - Juliano Laranjeira
-      </h1>
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl font-bold text-gray-800">
+          Study Schedule - Juliano Laranjeira
+        </h1>
+        <p className="text-sm text-gray-600 font-mono">{currentTime}</p>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-        {days.map((day, index) => (
+        {days.map((day) => (
           <Card
             key={day.name}
             className={`overflow-hidden ${
-              index === activeDay
+              day.dayIndex === activeDay
                 ? "ring-4 ring-blue-500 shadow-lg"
                 : "hover:ring-2 hover:ring-blue-300"
             }`}
@@ -167,8 +231,8 @@ const Schedule = () => {
                   key={idx}
                   name={subject.name}
                   type={subject.type}
-                  isActive={index === activeDay}
-                  onClick={() => setActiveDay(index)} // Alterando o dia ativo
+                  isActive={day.dayIndex === activeDay}
+                  onClick={() => setActiveDay(day.dayIndex)}
                 />
               ))}
             </div>
